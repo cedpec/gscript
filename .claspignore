@@ -1,0 +1,14 @@
+# Only deploy files inside apps/ to Apps Script. Everything else is dev.
+# Ignore dev/test files so clasp and pre-push check won't consider them
+lib/**
+test/**
+scripts/**
+node_modules/**
+.node_modules/**
+package.json
+package-lock.json
+README.md
+.github/**
+**/*.test.js
+**/gas-mock.js
+dev_backup/**

@@ -1,0 +1,19 @@
+{
+  "name": "gscript-tests",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "prettier": "^3.6.2"
+  },
+  "scripts": {
+    "test": "jest --runInBand",
+    "format": "prettier --write \"**/*.{js,md,json}\"",
+    "format:check": "prettier --check \"**/*.{js,md,json}\"",
+    "ci": "npm run format:check && npm test",
+    "check:clasp": "node scripts/prepush-check.js",
+    "install-hooks": "node scripts/install-hooks.js install",
+    "uninstall-hooks": "node scripts/install-hooks.js uninstall",
+    "postinstall": "npm run install-hooks"
+  }
+}
