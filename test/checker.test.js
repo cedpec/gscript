@@ -7,7 +7,7 @@ require("../lib/gas-mock");
 describe("Code.js basic tests", () => {
   let code;
   beforeAll(() => {
-    const codePath = path.join(__dirname, "..", "Code.js");
+  const codePath = path.join(__dirname, "..", "apps", "Code.js");
     const content = fs.readFileSync(codePath, "utf8");
     // Evaluate the script in the current node context (mocks available)
     eval(content);
