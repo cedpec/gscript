@@ -1,8 +1,6 @@
 # CI status
 
-> Badge activé pour le dépôt `cedpec/gscript` (mettre à jour si besoin).
-
-![CI](https://github.com/cedpec/gscript/actions/workflows/ci.yml/badge.svg)
+[![CI](https://github.com/cedpec/gscript/actions/workflows/ci.yml/badge.svg)](https://github.com/cedpec/gscript/actions/workflows/ci.yml)
 
 # Tests unitaires (Jest) pour le script Apps Script
 
