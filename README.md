@@ -62,6 +62,7 @@ npm run uninstall-hooks
    git push -u origin main
 
 Make sure `.gitignore` is correct before pushing (it includes `node_modules/` and `dev_backup/`).
+
 # CI status
 
 > Remplace `OWNER` et `REPO` par tes valeurs GitHub pour activer le badge.
