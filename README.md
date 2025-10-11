@@ -23,9 +23,6 @@ npm test
 
 Notes
 
-- Les mocks sont volontairement basiques. Pour des tests plus complets il faudra enrichir `lib/gas-mock.js` (simuler responses SolarEdge, différents codes Tuya, erreurs réseau, etc.).
-- `Code.js` est évalué dans le contexte Node : attention aux APIs non mockées.
-
 Pre-push check
 
 Un script de vérification pré-push a été ajouté pour empêcher d'envoyer des fichiers de test/dev contenant des appels Node-specific (ex: `global`) vers Google Apps Script.
@@ -56,3 +53,14 @@ Pour désinstaller :
 ```bash
 npm run uninstall-hooks
 ```
+
+## How to push to GitHub
+
+1. Create a repository on GitHub (via the website or `gh repo create`).
+2. Add the remote and push from this folder:
+
+   git remote add origin <your-repo-url>
+   git branch -M main
+   git push -u origin main
+
+Make sure `.gitignore` is correct before pushing (it includes `node_modules/` and `dev_backup/`).
