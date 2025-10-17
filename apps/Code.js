@@ -129,6 +129,27 @@ function checkSolarAndControlHeater() {
     Logger.log("🚨 Statut du device incohérent 🚨");
   Logger.log("deviceRealStatus " + deviceRealStatus);
 
+  // Manage the nb time that the heater is no more consuming energy when it is ON
+  var devicePowerConsumption = deviceStatus
+    ? extractCodeValue(deviceStatus, "cur_current")
+    : null;
+  if (
+    devicePowerConsumption != null &&
+    devicePowerConsumption < 100 &&
+    state === "ON"
+  ) {
+    Logger.log(
+      "⚠️ Le chauffe-eau ne consomme plus d'énergie alors qu'il est allumé.",
+    );
+    // On considère que le chauffe-eau est OFF dans ce cas
+    props.setProperty(
+      "HEATER_NB_INTERRUPTION",
+      props.getProperty("HEATER_NB_INTERRUPTION")
+        ? (parseInt(props.getProperty("HEATER_NB_INTERRUPTION")) + 1).toString()
+        : "1",
+    );
+  }
+
   // Ajuste le surplus pour tenir compte du chauffe eau allumé
   if (state === "ON") {
     surplus += heaterPower;
@@ -151,6 +172,14 @@ function checkSolarAndControlHeater() {
     dailyMinutes = 0;
     props.setProperty("LAST_DATE", today);
     Logger.log("Compteur quotidien réinitialisé à " + hour + "h");
+
+    // réinitialisation du compteur d'interruptions
+    Logger.log(
+      "Réinitialisation du compteur d'interruptions, nb interruptions du jour ",
+      props.getProperty("HEATER_NB_INTERRUPTION"),
+    );
+    props.setProperty("HEATER_NB_INTERRUPTION", "0");
+    Logger.log("Compteur d'interruptions réinitialisé");
   }
 
   // Mise à jour du compteur si ON
