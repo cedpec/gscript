@@ -10,9 +10,9 @@ const minOnMinutes = 30; // durée minimale ON
 const minOffMinutes = 15; // durée minimale OFF
 
 // Limite quotidienne (minutes)
-const dailyMaxMinutes = 120;
+const dailyMaxMinutes = 150;
 // Durée minimale quotidienne garantie (minutes)
-const minDailyMinutes = 90;
+const minDailyMinutes = 120;
 
 // Heures creuses (exemple : 2h → 5h)
 const hcStartHour = 2;
