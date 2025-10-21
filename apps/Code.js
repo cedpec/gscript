@@ -142,11 +142,10 @@ function checkSolarAndControlHeater() {
       "⚠️ Le chauffe-eau ne consomme plus d'énergie alors qu'il est allumé.",
     );
     // On considère que le chauffe-eau est OFF dans ce cas
-    props.setProperty(
-      "HEATER_NB_INTERRUPTION",
-      props.getProperty("HEATER_NB_INTERRUPTION")
-        ? (parseInt(props.getProperty("HEATER_NB_INTERRUPTION")) + 1).toString()
-        : "1");
+    var newHeaterNbInterruption = props.getProperty("HEATER_NB_INTERRUPTION")
+      ? (parseInt(props.getProperty("HEATER_NB_INTERRUPTION")) + 1).toString()
+      : "1";
+    props.setProperty("HEATER_NB_INTERRUPTION", newHeaterNbInterruption);
   }
 
   // Ajuste le surplus pour tenir compte du chauffe eau allumé
