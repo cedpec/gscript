@@ -2,7 +2,7 @@
  * Paramètres à remplir
  ***********************/
 // Seuils d’hystérésis
-const thresholdOn = 3000; // allume si surplus > 3000 W
+const thresholdOn = 2000; // allume si surplus > 3000 W
 const thresholdOff = 2000; // éteint si surplus < 2000 W
 const heaterPower = 3000; // puissance du chauffe-eau en W
 
@@ -12,7 +12,7 @@ const minOffMinutes = 15; // durée minimale OFF
 // Limite quotidienne (minutes)
 const dailyMaxMinutes = 150;
 // Durée minimale quotidienne garantie (minutes)
-const minDailyMinutes = 120;
+const minDailyMinutes = 90;
 
 // Heures creuses (exemple : 2h → 5h)
 const hcStartHour = 2;
