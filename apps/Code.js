@@ -138,13 +138,15 @@ function checkSolarAndControlHeater() {
     devicePowerConsumption < 100 &&
     state === "ON"
   ) {
-    Logger.log(
-      "⚠️ Le chauffe-eau ne consomme plus d'énergie alors qu'il est allumé.",
-    );
     // On considère que le chauffe-eau est OFF dans ce cas
     var newHeaterNbInterruption = props.getProperty("HEATER_NB_INTERRUPTION")
       ? (parseInt(props.getProperty("HEATER_NB_INTERRUPTION")) + 1).toString()
       : "1";
+    Logger.log(
+      "⚠️ Le chauffe-eau ne consomme plus d'énergie alors qu'il est allumé (" +
+        newHeaterNbInterruption +
+        ") ⚠️",
+    );
     props.setProperty("HEATER_NB_INTERRUPTION", newHeaterNbInterruption);
   }
 
