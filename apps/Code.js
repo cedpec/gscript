@@ -2,7 +2,7 @@
  * Paramètres à remplir
  ***********************/
 // Seuils d’hystérésis
-const thresholdOn = 2000; // allume si surplus > 3000 W
+const thresholdOn = 1500; // allume si surplus > 3000 W
 const thresholdOff = 2000; // éteint si surplus < 2000 W
 const heaterPower = 3000; // puissance du chauffe-eau en W
 
@@ -146,8 +146,7 @@ function checkSolarAndControlHeater() {
       "HEATER_NB_INTERRUPTION",
       props.getProperty("HEATER_NB_INTERRUPTION")
         ? (parseInt(props.getProperty("HEATER_NB_INTERRUPTION")) + 1).toString()
-        : "1",
-    );
+        : "1");
   }
 
   // Ajuste le surplus pour tenir compte du chauffe eau allumé
