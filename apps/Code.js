@@ -205,10 +205,12 @@ function checkSolarAndControlHeater() {
     sendCommand(cfg.deviceId, accessToken, true);
     props.setProperty("HEATER_STATE", "ON");
     props.setProperty("HEATER_NB_INTERMEDIATE_INTERRUPTION", "0");
+    creerDeclencheur("regularHeaterStatusCheck");
     props.setProperty("LAST_CHANGE", now.toString());
     Logger.log("➡️ Chauffe-eau allumé (raison: " + decision.reason + ")");
   } else if (decision.action === "OFF") {
     sendCommand(cfg.deviceId, accessToken, false);
+    supprimerDeclencheur("regularHeaterStatusCheck");
     props.setProperty("HEATER_STATE", "OFF");
     props.setProperty("LAST_CHANGE", now.toString());
     Logger.log("➡️ Chauffe-eau éteint (raison: " + decision.reason + ")");
@@ -265,6 +267,21 @@ function regularHeaterStatusCheck() {
       "HEATER_NB_INTERMEDIATE_INTERRUPTION",
       newHeaterNbInterruption,
     );
+  }
+}
+
+function creerDeclencheur(declencheurName) {
+  // Crée un déclencheur qui exécute la fonction "declencheurName"
+  // toutes les minutes
+  ScriptApp.newTrigger(declencheurName).timeBased().everyMinutes(1).create();
+}
+
+function supprimerDeclencheur(declencheurName) {
+  const triggers = ScriptApp.getProjectTriggers();
+  for (let t of triggers) {
+    if (t.getHandlerFunction() === declencheurName) {
+      ScriptApp.deleteTrigger(t);
+    }
   }
 }
 
