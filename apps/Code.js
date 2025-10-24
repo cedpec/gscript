@@ -143,9 +143,7 @@ function checkSolarAndControlHeater() {
       ? (parseInt(props.getProperty("HEATER_NB_INTERRUPTION")) + 1).toString()
       : "1";
     Logger.log(
-      "⚠️ Le chauffe-eau ne consomme plus d'énergie alors qu'il est allumé (" +
-        newHeaterNbInterruption +
-        ") ⚠️",
+      `⚠️ Le chauffe-eau ne consomme plus d'énergie alors qu'il est allumé (${newHeaterNbInterruption}) ⚠️`,
     );
     props.setProperty("HEATER_NB_INTERRUPTION", newHeaterNbInterruption);
   }
@@ -175,11 +173,9 @@ function checkSolarAndControlHeater() {
 
     // réinitialisation du compteur d'interruptions
     Logger.log(
-      "Réinitialisation du compteur d'interruptions, nb interruptions du jour ",
-      props.getProperty("HEATER_NB_INTERRUPTION"),
+      `Réinitialisation du compteur d'interruptions, nb interruptions du jour ${props.getProperty("HEATER_NB_INTERRUPTION")}`,
     );
     props.setProperty("HEATER_NB_INTERRUPTION", "0");
-    Logger.log("Compteur d'interruptions réinitialisé");
   }
 
   // Mise à jour du compteur si ON
