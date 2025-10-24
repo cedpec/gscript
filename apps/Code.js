@@ -127,7 +127,6 @@ function checkSolarAndControlHeater() {
     : null;
   if (deviceRealStatus != null && deviceRealStatus && state != "ON")
     Logger.log("🚨 Statut du device incohérent 🚨");
-  Logger.log("deviceRealStatus " + deviceRealStatus);
 
   // Manage the nb time that the heater is no more consuming energy when it is ON
   var devicePowerConsumption = deviceStatus
@@ -205,6 +204,7 @@ function checkSolarAndControlHeater() {
   if (decision.action === "ON") {
     sendCommand(cfg.deviceId, accessToken, true);
     props.setProperty("HEATER_STATE", "ON");
+    props.setProperty("HEATER_NB_INTERMEDIATE_INTERRUPTION", "0");
     props.setProperty("LAST_CHANGE", now.toString());
     Logger.log("➡️ Chauffe-eau allumé (raison: " + decision.reason + ")");
   } else if (decision.action === "OFF") {
@@ -216,6 +216,59 @@ function checkSolarAndControlHeater() {
     Logger.log("➡️ Pas de changement d’état (raison: " + decision.reason + ")");
   }
 }
+
+/***********************
+ * Fonctions utilitaires
+ * ***********************/
+function regularHeaterStatusCheck() {
+  ensureCfg();
+  var props = PropertiesService.getScriptProperties();
+  var state = props.getProperty("HEATER_STATE") || "OFF";
+  var lastChange = parseInt(props.getProperty("LAST_CHANGE") || "0");
+  var now = Date.now();
+  var minutesSinceChange = (now - lastChange) / 60000;
+
+  if (state === "OFF") {
+    Logger.log("Chauffe-eau éteint, pas de vérification nécessaire");
+    return;
+  }
+
+  var accessToken = getValidToken();
+  if (!accessToken) {
+    Logger.log("Aucun token Tuya valide — arrêt de la vérification");
+    return;
+  }
+
+  // Check device status
+  var deviceInfos = getDeviceStatus(accessToken, cfg.deviceId);
+  var devicePowerConsumption = deviceInfos
+    ? extractCodeValue(deviceInfos, "cur_current")
+    : null;
+
+  if (
+    devicePowerConsumption != null &&
+    devicePowerConsumption < 100 &&
+    state === "ON"
+  ) {
+    // On considère que le chauffe-eau est ON mais ne consomme pas => indication que temperature max atteinte
+    var newHeaterNbInterruption = props.getProperty(
+      "HEATER_NB_INTERMEDIATE_INTERRUPTION",
+    )
+      ? (
+          parseInt(props.getProperty("HEATER_NB_INTERMEDIATE_INTERRUPTION")) + 1
+        ).toString()
+      : "1";
+    Logger.log(
+      `⚠️ Le chauffe-eau ne consomme plus d'énergie alors qu'il est allumé depuis ${minutesSinceChange.toFixed(1)} minutes (nb interruption ${newHeaterNbInterruption}) ⚠️`,
+    );
+    props.setProperty(
+      "HEATER_NB_INTERMEDIATE_INTERRUPTION",
+      newHeaterNbInterruption,
+    );
+  }
+}
+
+/*************** End function secondaires */
 
 // Récupère la configuration et inclut le flag DRY_RUN (true/false)
 function getConfig() {
