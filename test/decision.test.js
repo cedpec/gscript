@@ -1,16 +1,10 @@
-const path = require("path");
-const fs = require("fs");
-
 // Load mocks
 require("../lib/gas-mock");
 
+const { decideHeaterAction } = require("../apps/logic.js");
+
 beforeAll(() => {
-  const codePath = path.join(__dirname, "..", "apps", "Code.js");
-  const content = fs.readFileSync(codePath, "utf8");
-  eval(content);
-  // expose the function we need
-  global.decideHeaterAction =
-    typeof decideHeaterAction !== "undefined" ? decideHeaterAction : null;
+  global.CONFIG = require("../apps/config.js").CONFIG;
 });
 
 describe("decideHeaterAction", () => {
