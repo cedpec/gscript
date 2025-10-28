@@ -4,7 +4,7 @@
 const CONFIG = {
   // Seuils d’hystérésis
   thresholdOff: 2000, // éteint si surplus < 2000 W
-  thresholdOn: 1500, // allume si surplus > 3000 W
+  thresholdOn: 2000, // allume si surplus > 3000 W
 
   heaterPower: 3000, // puissance du chauffe-eau en W
   minOnMinutes: 30, // durée minimale ON
