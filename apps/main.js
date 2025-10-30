@@ -1,3 +1,11 @@
+if (typeof require !== "undefined") {
+  var { ensureCfg, cfg } = require("./config.js");
+  var { getSolarPowerAvailable } = require("./solaredge.js");
+  var { getValidToken, getDeviceStatus } = require("./tuya.js");
+  var { extractCodeValue } = require("./utils.js");
+  var { decideHeaterAction } = require("./logic.js");
+}
+
 /***********************
  * Fonction principale
  ***********************/
@@ -52,7 +60,7 @@ function checkSolarAndControlHeater() {
 
   // Ajuste le surplus pour tenir compte du chauffe eau allumé
   if (state === "ON") {
-    surplus += heaterPower;
+    surplus += CONFIG.heaterPower;
   }
 
   Logger.log({
@@ -68,7 +76,7 @@ function checkSolarAndControlHeater() {
   });
 
   // Réinitialisation du compteur après heure creuse
-  if (today !== lastDate && hour >= hcEndHour && state === "OFF") {
+  if (today !== lastDate && hour >= CONFIG.hcEndHour && state === "OFF") {
     dailyMinutes = 0;
     props.setProperty("LAST_DATE", today);
     Logger.log("Compteur quotidien réinitialisé à " + hour + "h");
@@ -189,3 +197,8 @@ function supprimerDeclencheur(declencheurName) {
 }
 
 /*************** End function secondaires */
+
+// Export pour Jest
+if (typeof module !== "undefined") {
+  module.exports = { checkSolarAndControlHeater };
+}

@@ -1,3 +1,7 @@
+if (typeof require !== "undefined") {
+  var { ensureCfg, cfg } = require("./config.js");
+}
+
 /***********************
  * Lecture production SolarEdge
  ***********************/
@@ -39,4 +43,9 @@ function getSolarPowerAvailable() {
     Logger.log("Erreur fetch SolarEdge: " + e);
     return 0;
   }
+}
+
+// Export pour Jest
+if (typeof module !== "undefined") {
+  module.exports = { getSolarPowerAvailable };
 }
