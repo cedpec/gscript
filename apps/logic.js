@@ -75,7 +75,46 @@ function decideHeaterAction(input) {
   return { action: "NONE", reason: "unknown_state" };
 }
 
+/*
+ * Note une interruption de chauffe-eau et retourne le nombre d'interruptions
+ * dans la fenêtre temporelle définie.
+ * @param {Properties} props - objet PropertiesService.getScriptProperties()
+ * @param {number} nowMs - timestamp actuel en ms
+ * @returns {number} - nombre d'interruptions dans la fenêtre
+ */
+function noteInterruption(props, nowMs) {
+  var arr = JSON.parse(props.getProperty("HEATER_INTERRUPT_TIMES") || "[]");
+  arr.push(nowMs);
+  // purge les timestamps hors fenêtre
+  var cutoff = nowMs - cfg.interruptwindowMinutes * 60 * 1000;
+  arr = arr.filter((t) => t >= cutoff);
+  props.setProperty("HEATER_INTERRUPT_TIMES", JSON.stringify(arr));
+  return arr.length;
+}
+
+/*
+ * Vérifie si le chauffe-eau doit être arrêté pour la journée.
+ * @param {Properties} props - objet PropertiesService.getScriptProperties()
+ * @param {number} dailyMinutes - minutes ON aujourd'hui
+ * @param {number} nowMs - timestamp actuel en ms
+ * @returns {boolean} - true si doit arrêter, false sinon
+ */
+function checkIfShouldStopForDay(props, dailyMinutes, nowMs) {
+  // règles pour arrêter la chauffe pour la journée
+  // condition 1: goal atteint
+  if (dailyMinutes >= CONFIG.dailyMaxMinutes) return true;
+
+  // condition 2: total on enough + interruptions recent >= threshold
+  if (dailyMinutes < cfg.minTotalOnBeforeConsider) return false;
+  var arr = JSON.parse(props.getProperty("HEATER_INTERRUPT_TIMES") || "[]");
+  return arr.length >= cfg.consecutiveInterrupts;
+}
+
 // Si tu veux tester avec Jest
 if (typeof module !== "undefined") {
-  module.exports = { decideHeaterAction };
+  module.exports = {
+    decideHeaterAction,
+    noteInterruption,
+    checkIfShouldStopForDay,
+  };
 }

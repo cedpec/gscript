@@ -3,7 +3,11 @@ if (typeof require !== "undefined") {
   var { getSolarPowerAvailable } = require("./solaredge.js");
   var { getValidToken, getDeviceStatus } = require("./tuya.js");
   var { extractCodeValue } = require("./utils.js");
-  var { decideHeaterAction } = require("./logic.js");
+  var {
+    decideHeaterAction,
+    noteInterruption,
+    checkIfShouldStopForDay,
+  } = require("./logic.js");
 }
 
 /***********************
@@ -43,20 +47,61 @@ function checkSolarAndControlHeater() {
   var devicePowerConsumption = deviceStatus
     ? extractCodeValue(deviceStatus, "cur_current")
     : null;
+
   if (
     devicePowerConsumption != null &&
-    devicePowerConsumption < 100 &&
+    devicePowerConsumption < cfg.powerThreshold &&
     state === "ON"
   ) {
-    // On considère que le chauffe-eau est OFF dans ce cas
-    var newHeaterNbInterruption = props.getProperty("HEATER_NB_INTERRUPTION")
-      ? (parseInt(props.getProperty("HEATER_NB_INTERRUPTION")) + 1).toString()
-      : "1";
-    Logger.log(
-      `⚠️ Le chauffe-eau ne consomme plus d'énergie alors qu'il est allumé (${newHeaterNbInterruption}) ⚠️`,
+    // vérifier la durée depuis que la consommation est tombée
+    var lastNoPowerTs = parseInt(
+      props.getProperty("HEATER_NO_POWER_SINCE") || "0",
     );
-    props.setProperty("HEATER_NB_INTERRUPTION", newHeaterNbInterruption);
+    var nowMs = Date.now();
+    if (!lastNoPowerTs) {
+      props.setProperty("HEATER_NO_POWER_SINCE", nowMs.toString());
+    } else {
+      var durationNoPowerMin = (nowMs - lastNoPowerTs) / 60000;
+      if (durationNoPowerMin >= cfg.noPowerMinutes) {
+        // interruption confirmée
+        var interrupts = noteInterruption(props, nowMs);
+        // reset marker
+        props.deleteProperty("HEATER_NO_POWER_SINCE");
+        Logger.log(
+          "Interruption confirmée, total interruptions récentes: " + interrupts,
+        );
+
+        // décision : si on a assez chauffé aujourd'hui et assez d'interruptions, arrêter pour la journée
+        var dailyMinutes = parseInt(props.getProperty("DAILY_MINUTES") || "0");
+        if (checkIfShouldStopForDay(props, dailyMinutes, nowMs)) {
+          Logger.log(
+            "=> Considérer la chauffe comme terminée pour aujourd'hui (stop).",
+          );
+          // action : forcer OFF et marquer jour comme complet
+          // sendCommand(cfg.deviceId, accessToken, false);
+          // props.setProperty("HEATER_STATE", "OFF");
+          // props.setProperty("LAST_CHANGE", nowMs.toString());
+          // // tu peux aussi mettre un flag DONE_FOR_DAY = true
+          // props.setProperty("HEATER_DONE_FOR_DAY", "true");
+        }
+      }
+    }
+  } else {
+    // consommation ok -> clear marker
+    props.deleteProperty("HEATER_NO_POWER_SINCE");
   }
+
+  // {
+  //   // On considère que le chauffe-eau est OFF dans ce cas
+  //   var newHeaterNbInterruption = props.getProperty("HEATER_NB_INTERRUPTION")
+  //     ? (parseInt(props.getProperty("HEATER_NB_INTERRUPTION")) + 1).toString()
+  //     : "1";
+  //   Logger.log(
+  //     `⚠️ Le chauffe-eau ne consomme plus d'énergie alors qu'il est allumé (${newHeaterNbInterruption}) ⚠️`,
+  //   );
+  //   props.setProperty("HEATER_NB_INTERRUPTION", newHeaterNbInterruption);
+
+  // }
 
   // Ajuste le surplus pour tenir compte du chauffe eau allumé
   if (state === "ON") {

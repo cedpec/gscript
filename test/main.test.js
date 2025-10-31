@@ -41,6 +41,7 @@ describe("checkSolarAndControlHeater - réinitialisation quotidienne", () => {
       data: {},
       getProperty: jest.fn((key) => props.data[key]),
       setProperty: jest.fn((key, value) => (props.data[key] = value)),
+      deleteProperty: jest.fn((key) => delete props.data[key]),
     };
     global.PropertiesService = {
       getScriptProperties: () => props,
@@ -165,6 +166,7 @@ describe("checkSolarAndControlHeater - réinitialisation quotidienne", () => {
       getScriptProperties: () => ({
         getProperty: (key) => props.get(key),
         setProperty: (key, value) => props.set(key, value),
+        deleteProperty: (key) => delete props[key],
       }),
     };
 
@@ -212,6 +214,7 @@ describe("checkSolarAndControlHeater - réinitialisation quotidienne", () => {
       getScriptProperties: () => ({
         getProperty: (key) => props.get(key),
         setProperty: (key, value) => props.set(key, value),
+        deleteProperty: (key) => delete props[key],
       }),
     };
 
