@@ -4,20 +4,20 @@
 const CONFIG = {
   // Seuils d’hystérésis
   thresholdOff: 2000, // éteint si surplus < 2000 W
-  thresholdOn: 2000, // allume si surplus > 2000 W
+  thresholdOn: 1800, // allume si surplus > 2000 W
 
   heaterPower: 3000, // puissance du chauffe-eau en W
   minOnMinutes: 30, // durée minimale ON
   minOffMinutes: 15, // durée minimale OFF
 
   // Limite quotidienne (minutes)
-  dailyMaxMinutes: 150,
+  dailyMaxMinutes: 240,
   // Durée minimale quotidienne garantie (minutes)
-  minDailyMinutes: 90,
+  minDailyMinutes: 150,
 
-  // Heures creuses (exemple : 2h → 5h)
+  // Heures creuses (exemple : 2h → 6h)
   hcStartHour: 2,
-  hcEndHour: 5,
+  hcEndHour: 6,
 };
 
 var cfg = null;

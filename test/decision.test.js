@@ -67,4 +67,30 @@ describe("decideHeaterAction", () => {
     });
     expect(res.action).toBe("NONE");
   });
+
+  test("Stay ON as long as daily min minutes not reached during hc", () => {
+    const res = decideHeaterAction({
+      state: "ON",
+      surplus: 10000,
+      minutesSinceChange: 90,
+      dailyMinutes: 115,
+      hour: 4,
+      opts: { dailyMaxMinutes: 120 },
+    });
+    expect(res.action).toBe("NONE");
+    expect(res.reason).toBe("hc_already_on");
+  });
+
+  test("Change to OFF when daily minutes reached during HC heating", () => {
+    const res = decideHeaterAction({
+      state: "ON",
+      surplus: 10000,
+      minutesSinceChange: 90,
+      dailyMinutes: 155,
+      hour: 5,
+      opts: { dailyMaxMinutes: 120 },
+    });
+    expect(res.action).toBe("OFF");
+    expect(res.reason).toBe("daily_limit");
+  });
 });
