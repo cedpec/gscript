@@ -191,6 +191,45 @@ function getDeviceStatus(accessToken, deviceId) {
   }
 }
 
+function getDeviceProperty(accessToken, deviceId, property) {
+  ensureCfg();
+  if (!deviceId) {
+    Logger.log("deviceId manquant");
+    return null;
+  } else if (!property) {
+    Logger.log("property manquant");
+    return null;
+  }
+  var path =
+    "/v2.0/cloud/thing/" + deviceId + "/shadow/properties?codes=" + property;
+  var request = tuyaSignedRequest("GET", path, "", accessToken);
+  try {
+    var response = UrlFetchApp.fetch(request.url, {
+      method: request.options.method,
+      headers: request.options.headers,
+      muteHttpExceptions: request.options.muteHttpExceptions,
+    });
+    Logger.log(
+      "HTTP " + response.getResponseCode() + " -> " + response.getContentText(),
+    );
+    try {
+      var data = JSON.parse(response.getContentText());
+      if (data && data.success) {
+        return data.result;
+      } else {
+        Logger.log("Erreur API : " + JSON.stringify(data));
+        return null;
+      }
+    } catch (e) {
+      Logger.log("Erreur parse JSON : " + e);
+      return null;
+    }
+  } catch (e) {
+    Logger.log("Erreur fetch status Tuya: " + e);
+    return null;
+  }
+}
+
 // Si tu veux tester avec Jest
 if (typeof module !== "undefined") {
   module.exports = { sendCommand, getValidToken, getDeviceStatus };

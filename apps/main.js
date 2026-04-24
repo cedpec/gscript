@@ -456,6 +456,23 @@ function openSettings() {
 
 /*************** End Settings UI */
 
+/**
+ * Crée une endpoint Web pour accéder aux paramètres
+ * Appelée quand on accède à l'URL du script déployé en tant qu'application web
+ */
+function doGet() {
+  try {
+    var htmlOutput = HtmlService.createHtmlOutputFromFile("settings");
+    return htmlOutput.setXFrameOptionsMode(
+      HtmlService.XFrameOptionsMode.ALLOWALL,
+    );
+  } catch (e) {
+    return HtmlService.createHtmlOutput(
+      "<h1>Erreur</h1><p>" + e.message + "</p>",
+    );
+  }
+}
+
 // Export pour Jest
 if (typeof module !== "undefined") {
   module.exports = { checkSolarAndControlHeater };
