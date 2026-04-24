@@ -310,11 +310,11 @@ function getSettings() {
     minOnMinutes: props.getProperty("minOnMinutes") || "30",
     minOffMinutes: props.getProperty("minOffMinutes") || "15",
     // Limites quotidiennes
-    dailyMaxMinutes: props.getProperty("dailyMaxMinutes") || "120",
-    minDailyMinutes: props.getProperty("minDailyMinutes") || "90",
+    dailyMaxMinutes: props.getProperty("dailyMaxMinutes") || "240",
+    minDailyMinutes: props.getProperty("minDailyMinutes") || "150",
     // Heures creuses
     hcStartHour: props.getProperty("hcStartHour") || "2",
-    hcEndHour: props.getProperty("hcEndHour") || "5",
+    hcEndHour: props.getProperty("hcEndHour") || "6",
     // Configuration SolarEdge
     SITE_ID: props.getProperty("SITE_ID") || "",
     SOLAR_KEY: props.getProperty("SOLAR_KEY") || "",
@@ -327,6 +327,13 @@ function getSettings() {
     DRY_RUN: props.getProperty("DRY_RUN") || "false",
     HEATER_STATE: props.getProperty("HEATER_STATE") || "OFF",
     DAILY_MINUTES: props.getProperty("DAILY_MINUTES") || "0",
+    // Paramètres de détection des interruptions
+    powerThreshold: props.getProperty("powerThreshold") || "100",
+    noPowerMinutes: props.getProperty("noPowerMinutes") || "8",
+    consecutiveInterrupts: props.getProperty("consecutiveInterrupts") || "3",
+    interruptwindowMinutes: props.getProperty("interruptwindowMinutes") || "30",
+    minTotalOnBeforeConsider:
+      props.getProperty("minTotalOnBeforeConsider") || "45",
   };
 }
 
@@ -360,6 +367,11 @@ function saveSettings(data) {
     "TUYA_DEVICE_ID",
     "DRY_RUN",
     "DAILY_MINUTES",
+    "powerThreshold",
+    "noPowerMinutes",
+    "consecutiveInterrupts",
+    "interruptwindowMinutes",
+    "minTotalOnBeforeConsider",
     // Note: HEATER_STATE est en lecture seule
   ];
 

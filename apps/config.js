@@ -18,29 +18,71 @@ const CONFIG = {
   // Heures creuses (exemple : 2h → 6h)
   hcStartHour: 2,
   hcEndHour: 6,
+
+  // Paramètres de détection des interruptions
+  powerThreshold: 100, // W
+  noPowerMinutes: 8, // minutes
+  consecutiveInterrupts: 3,
+  interruptwindowMinutes: 30,
+  minTotalOnBeforeConsider: 45,
 };
 
 var cfg = null;
 
-// Récupère la configuration et inclut le flag DRY_RUN (true/false)
+// Récupère la configuration depuis les Script Properties avec les valeurs par défaut
 function getConfig() {
   var props = PropertiesService.getScriptProperties();
   return {
+    // Seuils d'hystérésis
+    thresholdOn:
+      parseInt(props.getProperty("thresholdOn")) || CONFIG.thresholdOn,
+    thresholdOff:
+      parseInt(props.getProperty("thresholdOff")) || CONFIG.thresholdOff,
+    heaterPower:
+      parseInt(props.getProperty("heaterPower")) || CONFIG.heaterPower,
+
+    // Durées minimales
+    minOnMinutes:
+      parseInt(props.getProperty("minOnMinutes")) || CONFIG.minOnMinutes,
+    minOffMinutes:
+      parseInt(props.getProperty("minOffMinutes")) || CONFIG.minOffMinutes,
+
+    // Limites quotidiennes
+    dailyMaxMinutes:
+      parseInt(props.getProperty("dailyMaxMinutes")) || CONFIG.dailyMaxMinutes,
+    minDailyMinutes:
+      parseInt(props.getProperty("minDailyMinutes")) || CONFIG.minDailyMinutes,
+
+    // Heures creuses
+    hcStartHour:
+      parseInt(props.getProperty("hcStartHour")) || CONFIG.hcStartHour,
+    hcEndHour: parseInt(props.getProperty("hcEndHour")) || CONFIG.hcEndHour,
+
+    // APIs
     siteId: props.getProperty("SITE_ID"),
     apiKeySolar: props.getProperty("SOLAR_KEY"),
     tuyaHost: props.getProperty("TUYA_HOST"),
     tuyaAccessId: props.getProperty("TUYA_ACCESS_ID"),
     tuyaAccessSecret: props.getProperty("TUYA_ACCESS_SECRET"),
     deviceId: props.getProperty("TUYA_DEVICE_ID"),
+
+    // Mode
     dryRun: (props.getProperty("DRY_RUN") || "false").toLowerCase() === "true",
-    powerThreshold: parseInt(props.getProperty("POWER_THRESHOLD")) || 100,
-    noPowerMinutes: parseInt(props.getProperty("NO_POWER_MINUTES")) || 8,
+
+    // Paramètres de détection des interruptions
+    powerThreshold:
+      parseInt(props.getProperty("powerThreshold")) || CONFIG.powerThreshold,
+    noPowerMinutes:
+      parseInt(props.getProperty("noPowerMinutes")) || CONFIG.noPowerMinutes,
     consecutiveInterrupts:
-      parseInt(props.getProperty("CONSECUTIVE_INTERRUPTS")) || 3,
+      parseInt(props.getProperty("consecutiveInterrupts")) ||
+      CONFIG.consecutiveInterrupts,
     interruptwindowMinutes:
-      parseInt(props.getProperty("INTERRUPT_WINDOW_MINUTES")) || 30,
+      parseInt(props.getProperty("interruptwindowMinutes")) ||
+      CONFIG.interruptwindowMinutes,
     minTotalOnBeforeConsider:
-      parseInt(props.getProperty("MIN_TOTAL_ON_BEFORE_CONSIDER")) || 45,
+      parseInt(props.getProperty("minTotalOnBeforeConsider")) ||
+      CONFIG.minTotalOnBeforeConsider,
   };
 }
 

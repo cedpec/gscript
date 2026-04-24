@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <base target="_top" />
@@ -10,7 +10,7 @@
         box-sizing: border-box;
       }
       body {
-        font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+        font-family: "Roboto", "Helvetica", "Arial", sans-serif;
         margin: 0;
         padding: 20px;
         background-color: #f5f5f5;
@@ -65,7 +65,7 @@
         border: 1px solid #ccc;
         border-radius: 4px;
         font-size: 1em;
-        font-family: 'Roboto Mono', 'Courier New', monospace;
+        font-family: "Roboto Mono", "Courier New", monospace;
       }
       input:focus,
       textarea:focus {
@@ -181,12 +181,16 @@
             <div class="form-group">
               <label for="thresholdOn">Seuil de démarrage (thresholdOn)</label>
               <input type="number" id="thresholdOn" name="thresholdOn" />
-              <div class="hint">Surplus solaire pour allumer le chauffe-eau</div>
+              <div class="hint">
+                Surplus solaire pour allumer le chauffe-eau
+              </div>
             </div>
             <div class="form-group">
               <label for="thresholdOff">Seuil d'arrêt (thresholdOff)</label>
               <input type="number" id="thresholdOff" name="thresholdOff" />
-              <div class="hint">Surplus solaire pour éteindre le chauffe-eau</div>
+              <div class="hint">
+                Surplus solaire pour éteindre le chauffe-eau
+              </div>
             </div>
           </div>
           <div class="form-row">
@@ -205,7 +209,9 @@
             <div class="form-group">
               <label for="minOnMinutes">Durée minimale ON</label>
               <input type="number" id="minOnMinutes" name="minOnMinutes" />
-              <div class="hint">Durée minimale d'allumage avant arrêt possible</div>
+              <div class="hint">
+                Durée minimale d'allumage avant arrêt possible
+              </div>
             </div>
             <div class="form-group">
               <label for="minOffMinutes">Durée minimale OFF</label>
@@ -221,13 +227,25 @@
           <div class="form-row">
             <div class="form-group">
               <label for="dailyMaxMinutes">Durée maximale par jour</label>
-              <input type="number" id="dailyMaxMinutes" name="dailyMaxMinutes" />
-              <div class="hint">Limite d'utilisation quotidienne du chauffe-eau</div>
+              <input
+                type="number"
+                id="dailyMaxMinutes"
+                name="dailyMaxMinutes"
+              />
+              <div class="hint">
+                Limite d'utilisation quotidienne du chauffe-eau
+              </div>
             </div>
             <div class="form-group">
               <label for="minDailyMinutes">Durée minimale garantie</label>
-              <input type="number" id="minDailyMinutes" name="minDailyMinutes" />
-              <div class="hint">Durée minimale garantie chaque jour (forcée en heures creuses)</div>
+              <input
+                type="number"
+                id="minDailyMinutes"
+                name="minDailyMinutes"
+              />
+              <div class="hint">
+                Durée minimale garantie chaque jour (forcée en heures creuses)
+              </div>
             </div>
           </div>
         </div>
@@ -238,12 +256,24 @@
           <div class="form-row">
             <div class="form-group">
               <label for="hcStartHour">Heure de début</label>
-              <input type="number" id="hcStartHour" name="hcStartHour" min="0" max="23" />
+              <input
+                type="number"
+                id="hcStartHour"
+                name="hcStartHour"
+                min="0"
+                max="23"
+              />
               <div class="hint">Heure de début des heures creuses (0-23)</div>
             </div>
             <div class="form-group">
               <label for="hcEndHour">Heure de fin</label>
-              <input type="number" id="hcEndHour" name="hcEndHour" min="0" max="23" />
+              <input
+                type="number"
+                id="hcEndHour"
+                name="hcEndHour"
+                min="0"
+                max="23"
+              />
               <div class="hint">Heure de fin des heures creuses (0-23)</div>
             </div>
           </div>
@@ -263,7 +293,9 @@
             <div class="form-group">
               <label for="SOLAR_KEY">Clé API SolarEdge</label>
               <input type="password" id="SOLAR_KEY" name="SOLAR_KEY" />
-              <div class="hint">Clé d'authentification pour l'API SolarEdge</div>
+              <div class="hint">
+                Clé d'authentification pour l'API SolarEdge
+              </div>
             </div>
           </div>
         </div>
@@ -275,7 +307,9 @@
             <div class="form-group">
               <label for="TUYA_HOST">Host Tuya</label>
               <input type="text" id="TUYA_HOST" name="TUYA_HOST" />
-              <div class="hint">URL du serveur Tuya (ex: https://openapi.tuya*.com)</div>
+              <div class="hint">
+                URL du serveur Tuya (ex: https://openapi.tuya*.com)
+              </div>
             </div>
           </div>
           <div class="form-row">
@@ -286,7 +320,11 @@
             </div>
             <div class="form-group">
               <label for="TUYA_ACCESS_SECRET">Access Secret</label>
-              <input type="password" id="TUYA_ACCESS_SECRET" name="TUYA_ACCESS_SECRET" />
+              <input
+                type="password"
+                id="TUYA_ACCESS_SECRET"
+                name="TUYA_ACCESS_SECRET"
+              />
               <div class="hint">Secret d'accès Tuya</div>
             </div>
           </div>
@@ -299,23 +337,108 @@
           </div>
         </div>
 
+        <!-- Paramètres de détection des interruptions -->
+        <div class="section">
+          <div class="section-title">
+            Détection des interruptions du chauffe-eau
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="powerThreshold">Seuil de puissance (W)</label>
+              <input type="number" id="powerThreshold" name="powerThreshold" />
+              <div class="hint">
+                Seuil minimum de consommation pour considérer le chauffe-eau
+                actif
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="noPowerMinutes">Durée sans puissance (minutes)</label>
+              <input type="number" id="noPowerMinutes" name="noPowerMinutes" />
+              <div class="hint">
+                Durée d'absence de puissance avant détection d'interruption
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="consecutiveInterrupts"
+                >Interruptions consécutives</label
+              >
+              <input
+                type="number"
+                id="consecutiveInterrupts"
+                name="consecutiveInterrupts"
+              />
+              <div class="hint">
+                Nombre d'interruptions consécutives avant alerte
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="interruptwindowMinutes"
+                >Fenêtre d'interruption (minutes)</label
+              >
+              <input
+                type="number"
+                id="interruptwindowMinutes"
+                name="interruptwindowMinutes"
+              />
+              <div class="hint">
+                Fenêtre de temps pour compter les interruptions
+              </div>
+            </div>
+          </div>
+          <div class="form-row full">
+            <div class="form-group">
+              <label for="minTotalOnBeforeConsider"
+                >Durée minimale avant considération (minutes)</label
+              >
+              <input
+                type="number"
+                id="minTotalOnBeforeConsider"
+                name="minTotalOnBeforeConsider"
+              />
+              <div class="hint">
+                Durée totale ON requise avant de commencer à surveiller les
+                interruptions
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Mode et État -->
         <div class="section">
           <div class="section-title">Mode et État</div>
           <div class="form-row full">
             <div class="form-group">
               <label for="DRY_RUN">Mode DRY_RUN (simulation)</label>
-              <select id="DRY_RUN" name="DRY_RUN" style="padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1em;">
+              <select
+                id="DRY_RUN"
+                name="DRY_RUN"
+                style="
+                  padding: 10px;
+                  border: 1px solid #ccc;
+                  border-radius: 4px;
+                  font-size: 1em;
+                "
+              >
                 <option value="false">Désactivé (Envoi réel)</option>
                 <option value="true">Activé (Simulation)</option>
               </select>
-              <div class="hint">Activer pour tester sans envoyer de commandes réelles</div>
+              <div class="hint">
+                Activer pour tester sans envoyer de commandes réelles
+              </div>
             </div>
           </div>
           <div class="form-row full">
             <div class="form-group">
               <label for="HEATER_STATE">État actuel du chauffe-eau</label>
-              <input type="text" id="HEATER_STATE" name="HEATER_STATE" readonly style="background-color: #f0f0f0; cursor: not-allowed;" />
+              <input
+                type="text"
+                id="HEATER_STATE"
+                name="HEATER_STATE"
+                readonly
+                style="background-color: #f0f0f0; cursor: not-allowed"
+              />
               <div class="hint">État actuel (lecture seule)</div>
             </div>
           </div>
@@ -331,7 +454,13 @@
         <!-- Boutons d'action -->
         <div class="button-group">
           <button type="submit" class="btn-primary">💾 Enregistrer</button>
-          <button type="button" class="btn-secondary" onclick="reloadSettings()">🔄 Recharger</button>
+          <button
+            type="button"
+            class="btn-secondary"
+            onclick="reloadSettings()"
+          >
+            🔄 Recharger
+          </button>
         </div>
 
         <div id="message" class="message"></div>
@@ -340,14 +469,14 @@
 
     <script>
       // Charger les paramètres au chargement de la page
-      document.addEventListener('DOMContentLoaded', function () {
+      document.addEventListener("DOMContentLoaded", function () {
         loadSettings();
       });
 
       // Charger les paramètres depuis le serveur
       function loadSettings() {
-        document.getElementById('loading').style.display = 'block';
-        document.getElementById('settingsForm').style.display = 'none';
+        document.getElementById("loading").style.display = "block";
+        document.getElementById("settingsForm").style.display = "none";
 
         google.script.run
           .withSuccessHandler(function (data) {
@@ -359,13 +488,13 @@
               }
             });
 
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('settingsForm').style.display = 'block';
-            showMessage('Paramètres chargés avec succès', 'success', 2000);
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("settingsForm").style.display = "block";
+            showMessage("Paramètres chargés avec succès", "success", 2000);
           })
           .withFailureHandler(function (error) {
-            document.getElementById('loading').style.display = 'none';
-            showMessage('Erreur lors du chargement: ' + error, 'error');
+            document.getElementById("loading").style.display = "none";
+            showMessage("Erreur lors du chargement: " + error, "error");
           })
           .getSettings();
       }
@@ -376,37 +505,46 @@
       }
 
       // Soumettre le formulaire
-      document.getElementById('settingsForm').addEventListener('submit', function (e) {
-        e.preventDefault();
+      document
+        .getElementById("settingsForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
 
-        const formData = {};
-        const inputs = this.querySelectorAll('input, select');
-        inputs.forEach(function (input) {
-          if (input.id) {
-            formData[input.id] = input.value;
-          }
+          const formData = {};
+          const inputs = this.querySelectorAll("input, select");
+          inputs.forEach(function (input) {
+            if (input.id) {
+              formData[input.id] = input.value;
+            }
+          });
+
+          google.script.run
+            .withSuccessHandler(function () {
+              showMessage(
+                "✅ Paramètres enregistrés avec succès",
+                "success",
+                3000,
+              );
+            })
+            .withFailureHandler(function (error) {
+              showMessage(
+                "❌ Erreur lors de l'enregistrement: " + error,
+                "error",
+              );
+            })
+            .saveSettings(formData);
         });
-
-        google.script.run
-          .withSuccessHandler(function () {
-            showMessage('✅ Paramètres enregistrés avec succès', 'success', 3000);
-          })
-          .withFailureHandler(function (error) {
-            showMessage('❌ Erreur lors de l\'enregistrement: ' + error, 'error');
-          })
-          .saveSettings(formData);
-      });
 
       // Afficher un message temporaire
       function showMessage(text, type, duration) {
-        const messageDiv = document.getElementById('message');
+        const messageDiv = document.getElementById("message");
         messageDiv.textContent = text;
-        messageDiv.className = 'message ' + type;
+        messageDiv.className = "message " + type;
 
         if (duration) {
           setTimeout(function () {
-            messageDiv.className = 'message';
-            messageDiv.textContent = '';
+            messageDiv.className = "message";
+            messageDiv.textContent = "";
           }, duration);
         }
       }
