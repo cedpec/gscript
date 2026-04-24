@@ -377,17 +377,41 @@ function saveSettings(data) {
 /**
  * Crée un menu personnalisé pour accéder à la UI settings
  * Déclenché automatiquement quand le script s'ouvre
+ * Fonctionne avec Sheets, Docs, et Forms
  */
 function onOpen() {
   try {
-    var ui = SpreadsheetApp.getUi();
-    var menu = ui.createMenu("🔧 Chauffe-eau");
-    menu
-      .addItem("📋 Paramètres", "openSettings")
-      .addSeparator()
-      .addItem("▶️ Lancer vérification", "checkSolarAndControlHeater")
-      .addToUi();
-    Logger.log("Menu créé avec succès");
+    var ui = null;
+
+    // Essayer SpreadsheetApp d'abord
+    try {
+      ui = SpreadsheetApp.getUi();
+    } catch (e1) {
+      // Si Sheets n'est pas disponible, essayer DocumentApp
+      try {
+        ui = DocumentApp.getUi();
+      } catch (e2) {
+        // Si Docs n'est pas disponible, essayer FormApp
+        try {
+          ui = FormApp.getUi();
+        } catch (e3) {
+          Logger.log(
+            "Aucun contexte UI disponible (Sheets/Docs/Forms). Exécutez manuellemen sur le Apps Script Editor.",
+          );
+          return;
+        }
+      }
+    }
+
+    if (ui) {
+      var menu = ui.createMenu("🔧 Chauffe-eau");
+      menu
+        .addItem("📋 Paramètres", "openSettings")
+        .addSeparator()
+        .addItem("▶️ Lancer vérification", "checkSolarAndControlHeater")
+        .addToUi();
+      Logger.log("Menu créé avec succès");
+    }
   } catch (e) {
     Logger.log("Erreur lors de la création du menu: " + e.message);
   }
@@ -397,13 +421,37 @@ function onOpen() {
  * Ouvre la modal avec la UI settings.html
  */
 function openSettings() {
-  var htmlOutput = HtmlService.createHtmlOutputFromFile("settings")
-    .setWidth(950)
-    .setHeight(1200);
-  SpreadsheetApp.getUi().showModalDialog(
-    htmlOutput,
-    "Paramètres du Chauffe-eau",
-  );
+  try {
+    var htmlOutput = HtmlService.createHtmlOutputFromFile("settings")
+      .setWidth(950)
+      .setHeight(1200);
+
+    var ui = null;
+
+    // Essayer SpreadsheetApp d'abord
+    try {
+      ui = SpreadsheetApp.getUi();
+      ui.showModalDialog(htmlOutput, "Paramètres du Chauffe-eau");
+    } catch (e1) {
+      // Si Sheets n'est pas disponible, essayer DocumentApp
+      try {
+        ui = DocumentApp.getUi();
+        ui.showModalDialog(htmlOutput, "Paramètres du Chauffe-eau");
+      } catch (e2) {
+        // Si Docs n'est pas disponible, essayer FormApp
+        try {
+          ui = FormApp.getUi();
+          ui.showModalDialog(htmlOutput, "Paramètres du Chauffe-eau");
+        } catch (e3) {
+          Logger.log(
+            "Erreur: Aucun contexte UI disponible pour afficher la modal",
+          );
+        }
+      }
+    }
+  } catch (e) {
+    Logger.log("Erreur lors de l'ouverture des paramètres: " + e.message);
+  }
 }
 
 /*************** End Settings UI */
