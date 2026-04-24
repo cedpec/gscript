@@ -131,6 +131,7 @@ function checkSolarAndControlHeater() {
       `Réinitialisation du compteur d'interruptions, nb interruptions du jour ${props.getProperty("HEATER_NB_INTERRUPTION")}`,
     );
     props.setProperty("HEATER_NB_INTERRUPTION", "0");
+    props.setProperty("ADD_ELE_TOTAL", "0");
   }
 
   // Mise à jour du compteur si ON
@@ -183,13 +184,12 @@ function regularHeaterStatusCheck() {
   var props = PropertiesService.getScriptProperties();
   var state = props.getProperty("HEATER_STATE") || "OFF";
   var lastChange = parseInt(props.getProperty("LAST_CHANGE") || "0");
+  var addEleLastTimeUpdate = parseInt(
+    props.getProperty("ADD_ELE_LAST_TIME_UPDATE") || "0",
+  );
+  var addEleTotal = parseInt(props.getProperty("ADD_ELE_TOTAL") || "0");
   var now = Date.now();
   var minutesSinceChange = (now - lastChange) / 60000;
-
-  if (state === "OFF") {
-    Logger.log("Chauffe-eau éteint, pas de vérification nécessaire");
-    return;
-  }
 
   var accessToken = getValidToken();
   if (!accessToken) {
@@ -197,8 +197,56 @@ function regularHeaterStatusCheck() {
     return;
   }
 
+  // Checl ADD_ELE property to get total consumption
+  var devideAddEleProperty = getDeviceProperty(
+    accessToken,
+    cfg.deviceId,
+    "add_ele",
+  );
+  if (
+    !devideAddEleProperty ||
+    !devideAddEleProperty.properties ||
+    !Array.isArray(devideAddEleProperty.properties)
+  )
+    return null;
+  var addEleProperties = devideAddEleProperty.properties.find(function (s) {
+    return s && s.code == "add_ele";
+  });
+
+  var newAddEleLastTimeUpdate = parseInt(addEleProperties.time);
+  var newAddEleValue = parseInt(addEleProperties.value);
+  var addEleTimeInterval =
+    (newAddEleLastTimeUpdate - addEleLastTimeUpdate) / 1000;
+  Logger.log(
+    `Consume ${newAddEleValue} watt during ${addEleTimeInterval} seconds`,
+  );
+  if (addEleTimeInterval > 0) {
+    var wattpersecond = newAddEleValue / addEleTimeInterval;
+    Logger.log(`watt per second ${wattpersecond}`);
+    if (wattpersecond < 0.1) {
+      Logger.log(
+        `⚠️ Reached target ${addEleTotal + newAddEleValue} watt after ${cfg.dailyMinutes} minutes, should be stopped ⚠️`,
+      );
+    }
+    props.setProperty(
+      "ADD_ELE_LAST_TIME_UPDATE",
+      newAddEleLastTimeUpdate.toString(),
+    );
+    props.setProperty(
+      "ADD_ELE_TOTAL",
+      (addEleTotal + newAddEleValue).toString(),
+    );
+  }
+  //////////////////////////////////////////////
+
+  if (state === "OFF") {
+    Logger.log("Chauffe-eau éteint, pas de vérification nécessaire");
+    return;
+  }
+
   // Check device status
   var deviceInfos = getDeviceStatus(accessToken, cfg.deviceId);
+
   var devicePowerConsumption = deviceInfos
     ? extractCodeValue(deviceInfos, "cur_current")
     : null;
@@ -242,6 +290,118 @@ function supprimerDeclencheur(declencheurName) {
 }
 
 /*************** End function secondaires */
+
+/***********************
+ * Gestion des Paramètres (Settings UI)
+ ***********************/
+
+/**
+ * Retourne tous les paramètres stockés dans Script Properties
+ * Utilisé par settings.html pour peupler le formulaire
+ */
+function getSettings() {
+  var props = PropertiesService.getScriptProperties();
+  return {
+    // Seuils d'hystérésis
+    thresholdOn: props.getProperty("thresholdOn") || "3000",
+    thresholdOff: props.getProperty("thresholdOff") || "2000",
+    heaterPower: props.getProperty("heaterPower") || "3000",
+    // Durées minimales
+    minOnMinutes: props.getProperty("minOnMinutes") || "30",
+    minOffMinutes: props.getProperty("minOffMinutes") || "15",
+    // Limites quotidiennes
+    dailyMaxMinutes: props.getProperty("dailyMaxMinutes") || "120",
+    minDailyMinutes: props.getProperty("minDailyMinutes") || "90",
+    // Heures creuses
+    hcStartHour: props.getProperty("hcStartHour") || "2",
+    hcEndHour: props.getProperty("hcEndHour") || "5",
+    // Configuration SolarEdge
+    SITE_ID: props.getProperty("SITE_ID") || "",
+    SOLAR_KEY: props.getProperty("SOLAR_KEY") || "",
+    // Configuration Tuya
+    TUYA_HOST: props.getProperty("TUYA_HOST") || "",
+    TUYA_ACCESS_ID: props.getProperty("TUYA_ACCESS_ID") || "",
+    TUYA_ACCESS_SECRET: props.getProperty("TUYA_ACCESS_SECRET") || "",
+    TUYA_DEVICE_ID: props.getProperty("TUYA_DEVICE_ID") || "",
+    // Mode et État
+    DRY_RUN: props.getProperty("DRY_RUN") || "false",
+    HEATER_STATE: props.getProperty("HEATER_STATE") || "OFF",
+    DAILY_MINUTES: props.getProperty("DAILY_MINUTES") || "0",
+  };
+}
+
+/**
+ * Sauvegarde les paramètres depuis settings.html
+ * @param {Object} data - Dictionnaire clé-valeur des paramètres à sauvegarder
+ */
+function saveSettings(data) {
+  if (!data || typeof data !== "object") {
+    throw new Error("Données invalides pour saveSettings");
+  }
+
+  var props = PropertiesService.getScriptProperties();
+
+  // Liste des paramètres autorisés (évite d'écrire n'importe quoi)
+  var allowedKeys = [
+    "thresholdOn",
+    "thresholdOff",
+    "heaterPower",
+    "minOnMinutes",
+    "minOffMinutes",
+    "dailyMaxMinutes",
+    "minDailyMinutes",
+    "hcStartHour",
+    "hcEndHour",
+    "SITE_ID",
+    "SOLAR_KEY",
+    "TUYA_HOST",
+    "TUYA_ACCESS_ID",
+    "TUYA_ACCESS_SECRET",
+    "TUYA_DEVICE_ID",
+    "DRY_RUN",
+    "DAILY_MINUTES",
+    // Note: HEATER_STATE est en lecture seule
+  ];
+
+  var saved = 0;
+  Object.keys(data).forEach(function (key) {
+    if (allowedKeys.indexOf(key) >= 0) {
+      props.setProperty(key, String(data[key]));
+      saved++;
+    }
+  });
+
+  Logger.log("Paramètres sauvegardés: " + saved + " champs mis à jour");
+}
+
+/**
+ * Crée un menu personnalisé pour accéder à la UI settings
+ * Déclenché automatiquement quand le script s'ouvre
+ */
+function onOpen() {
+  var ui = SpreadsheetApp.getUi();
+  var menu = ui.createMenu("🔧 Chauffe-eau");
+  menu
+    .addItem("📋 Paramètres", "openSettings")
+    .addSeparator()
+    .addItem("▶️ Lancer vérification", "checkSolarAndControlHeater")
+    .addToUi();
+}
+
+/**
+ * Ouvre la modal avec la UI settings.html
+ */
+function openSettings() {
+  var htmlOutput = HtmlService.createHtmlOutputFromFile("settings")
+    .setWidth(950)
+    .setHeight(1200);
+  SpreadsheetApp.getUi().showModalDialog(
+    htmlOutput,
+    "Paramètres du Chauffe-eau",
+  );
+}
+
+/*************** End Settings UI */
 
 // Export pour Jest
 if (typeof module !== "undefined") {
