@@ -379,13 +379,18 @@ function saveSettings(data) {
  * Déclenché automatiquement quand le script s'ouvre
  */
 function onOpen() {
-  var ui = SpreadsheetApp.getUi();
-  var menu = ui.createMenu("🔧 Chauffe-eau");
-  menu
-    .addItem("📋 Paramètres", "openSettings")
-    .addSeparator()
-    .addItem("▶️ Lancer vérification", "checkSolarAndControlHeater")
-    .addToUi();
+  try {
+    var ui = SpreadsheetApp.getUi();
+    var menu = ui.createMenu("🔧 Chauffe-eau");
+    menu
+      .addItem("📋 Paramètres", "openSettings")
+      .addSeparator()
+      .addItem("▶️ Lancer vérification", "checkSolarAndControlHeater")
+      .addToUi();
+    Logger.log("Menu créé avec succès");
+  } catch (e) {
+    Logger.log("Erreur lors de la création du menu: " + e.message);
+  }
 }
 
 /**
