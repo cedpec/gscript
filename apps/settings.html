@@ -174,88 +174,14 @@
       </div>
 
       <form id="settingsForm" style="display: none">
-        <!-- Seuils d'hystérésis -->
+        <!-- Configuration générale -->
         <div class="section">
-          <div class="section-title">Seuils d'hystérésis (W)</div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="thresholdOn">Seuil de démarrage (thresholdOn)</label>
-              <input type="number" id="thresholdOn" name="thresholdOn" />
-              <div class="hint">
-                Surplus solaire pour allumer le chauffe-eau
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="thresholdOff">Seuil d'arrêt (thresholdOff)</label>
-              <input type="number" id="thresholdOff" name="thresholdOff" />
-              <div class="hint">
-                Surplus solaire pour éteindre le chauffe-eau
-              </div>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="heaterPower">Puissance du chauffe-eau (W)</label>
-              <input type="number" id="heaterPower" name="heaterPower" />
-              <div class="hint">Puissance nominale en watts</div>
-            </div>
-          </div>
-        </div>
+          <div class="section-title">Configuration Générale</div>
 
-        <!-- Durées minimales -->
-        <div class="section">
-          <div class="section-title">Durées minimales (minutes)</div>
+          <!-- Heures creuses -->
           <div class="form-row">
             <div class="form-group">
-              <label for="minOnMinutes">Durée minimale ON</label>
-              <input type="number" id="minOnMinutes" name="minOnMinutes" />
-              <div class="hint">
-                Durée minimale d'allumage avant arrêt possible
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="minOffMinutes">Durée minimale OFF</label>
-              <input type="number" id="minOffMinutes" name="minOffMinutes" />
-              <div class="hint">Durée minimale d'arrêt avant redémarrage</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Limites quotidiennes -->
-        <div class="section">
-          <div class="section-title">Limites quotidiennes (minutes)</div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="dailyMaxMinutes">Durée maximale par jour</label>
-              <input
-                type="number"
-                id="dailyMaxMinutes"
-                name="dailyMaxMinutes"
-              />
-              <div class="hint">
-                Limite d'utilisation quotidienne du chauffe-eau
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="minDailyMinutes">Durée minimale garantie</label>
-              <input
-                type="number"
-                id="minDailyMinutes"
-                name="minDailyMinutes"
-              />
-              <div class="hint">
-                Durée minimale garantie chaque jour (forcée en heures creuses)
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Heures creuses -->
-        <div class="section">
-          <div class="section-title">Heures creuses</div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="hcStartHour">Heure de début</label>
+              <label for="hcStartHour">Heure de début HC</label>
               <input
                 type="number"
                 id="hcStartHour"
@@ -266,7 +192,7 @@
               <div class="hint">Heure de début des heures creuses (0-23)</div>
             </div>
             <div class="form-group">
-              <label for="hcEndHour">Heure de fin</label>
+              <label for="hcEndHour">Heure de fin HC</label>
               <input
                 type="number"
                 id="hcEndHour"
@@ -275,6 +201,69 @@
                 max="23"
               />
               <div class="hint">Heure de fin des heures creuses (0-23)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Configuration Chauffe-eau -->
+        <div class="section">
+          <div class="section-title">Chauffe-eau (Priorité 1)</div>
+
+          <!-- Seuils -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="thresholdOn">Seuil de démarrage (W)</label>
+              <input type="number" id="thresholdOn" name="thresholdOn" />
+              <div class="hint">Surplus solaire minimum pour allumer</div>
+            </div>
+            <div class="form-group">
+              <label for="thresholdOff">Seuil d'arrêt (W)</label>
+              <input type="number" id="thresholdOff" name="thresholdOff" />
+              <div class="hint">Surplus solaire minimum pour rester allumé</div>
+            </div>
+          </div>
+
+          <!-- Puissance et durées -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="heaterPower">Puissance (W)</label>
+              <input type="number" id="heaterPower" name="heaterPower" />
+              <div class="hint">Puissance nominale</div>
+            </div>
+            <div class="form-group">
+              <label for="minOnMinutes">Durée min ON (min)</label>
+              <input type="number" id="minOnMinutes" name="minOnMinutes" />
+              <div class="hint">Durée minimale d'allumage</div>
+            </div>
+          </div>
+
+          <!-- Limites quotidiennes -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="minOffMinutes">Durée min OFF (min)</label>
+              <input type="number" id="minOffMinutes" name="minOffMinutes" />
+              <div class="hint">Durée minimale d'arrêt</div>
+            </div>
+            <div class="form-group">
+              <label for="dailyMaxMinutes">Durée max/jour (min)</label>
+              <input
+                type="number"
+                id="dailyMaxMinutes"
+                name="dailyMaxMinutes"
+              />
+              <div class="hint">Maximum quotidien</div>
+            </div>
+          </div>
+
+          <div class="form-row full">
+            <div class="form-group">
+              <label for="minDailyMinutes">Durée min/jour (min)</label>
+              <input
+                type="number"
+                id="minDailyMinutes"
+                name="minDailyMinutes"
+              />
+              <div class="hint">Minimum garanti quotidien (forcé en HC)</div>
             </div>
           </div>
         </div>
@@ -333,6 +322,141 @@
               <label for="TUYA_DEVICE_ID">Device ID</label>
               <input type="text" id="TUYA_DEVICE_ID" name="TUYA_DEVICE_ID" />
               <div class="hint">ID du device Tuya (chauffe-eau)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Configuration Chauffe-eau (Device Tuya primaire) -->
+        <div class="section">
+          <div class="section-title">Chauffe-eau (Priorité 1)</div>
+          <div class="form-row full">
+            <div class="form-group">
+              <label for="TUYA_DEVICE_ID">Device ID Tuya</label>
+              <input type="text" id="TUYA_DEVICE_ID" name="TUYA_DEVICE_ID" />
+              <div class="hint">
+                ID du device Tuya pour le chauffe-eau (priorité 1)
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="thresholdOn">Seuil de démarrage (W)</label>
+              <input type="number" id="thresholdOn" name="thresholdOn" />
+              <div class="hint">Surplus solaire minimum pour allumer</div>
+            </div>
+            <div class="form-group">
+              <label for="thresholdOff">Seuil d'arrêt (W)</label>
+              <input type="number" id="thresholdOff" name="thresholdOff" />
+              <div class="hint">Surplus solaire minimum pour rester allumé</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Configuration Pompe Filtration -->
+        <div class="section">
+          <div class="section-title">Pompe Filtration Piscine (Priorité 2)</div>
+          <div class="form-row full">
+            <div class="form-group">
+              <label for="pumpDeviceId">Device ID Tuya</label>
+              <input type="text" id="pumpDeviceId" name="pumpDeviceId" />
+              <div class="hint">
+                ID du device Tuya pour la pompe de filtration
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="pumpThresholdOn">Seuil de démarrage (W)</label>
+              <input
+                type="number"
+                id="pumpThresholdOn"
+                name="pumpThresholdOn"
+              />
+              <div class="hint">Surplus disponible pour allumer la pompe</div>
+            </div>
+            <div class="form-group">
+              <label for="pumpThresholdOff">Seuil d'arrêt (W)</label>
+              <input
+                type="number"
+                id="pumpThresholdOff"
+                name="pumpThresholdOff"
+              />
+              <div class="hint">Surplus minimum pour rester allumée</div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="pumpPower">Puissance (W)</label>
+              <input type="number" id="pumpPower" name="pumpPower" />
+              <div class="hint">Puissance nominale de la pompe</div>
+            </div>
+            <div class="form-group">
+              <label for="pumpMinOnMinutes">Durée min continue (min)</label>
+              <input
+                type="number"
+                id="pumpMinOnMinutes"
+                name="pumpMinOnMinutes"
+              />
+              <div class="hint">Durée minimale de filtration continue</div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="pumpMinOffMinutes">Durée min d'arrêt (min)</label>
+              <input
+                type="number"
+                id="pumpMinOffMinutes"
+                name="pumpMinOffMinutes"
+              />
+              <div class="hint">Durée minimale d'arrêt avant redémarrage</div>
+            </div>
+            <div class="form-group">
+              <label for="pumpDailyMaxMinutes">Durée max par jour (min)</label>
+              <input
+                type="number"
+                id="pumpDailyMaxMinutes"
+                name="pumpDailyMaxMinutes"
+              />
+              <div class="hint">Maximum de fonctionnement quotidien</div>
+            </div>
+          </div>
+          <div class="form-row full">
+            <div class="form-group">
+              <label for="pumpMinDailyMinutes">Durée min par jour (min)</label>
+              <input
+                type="number"
+                id="pumpMinDailyMinutes"
+                name="pumpMinDailyMinutes"
+              />
+              <div class="hint">Minimum de filtration garantie quotidienne</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Configuration Charge Véhicule -->
+        <div class="section">
+          <div class="section-title">
+            Charge Véhicule Électrique (Priorité 3)
+          </div>
+          <div class="form-row full">
+            <div class="form-group">
+              <label for="vehicleDeviceId">Device ID Tuya</label>
+              <input type="text" id="vehicleDeviceId" name="vehicleDeviceId" />
+              <div class="hint">
+                ID du device Tuya pour la borne de charge (s'adapte
+                automatiquement)
+              </div>
+            </div>
+          </div>
+          <div class="form-row full">
+            <div class="form-group">
+              <label for="vehicleMaxPower">Puissance max de charge (W)</label>
+              <input
+                type="number"
+                id="vehicleMaxPower"
+                name="vehicleMaxPower"
+              />
+              <div class="hint">Puissance maximale de la borne de charge</div>
             </div>
           </div>
         </div>

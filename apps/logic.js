@@ -1,3 +1,7 @@
+if (typeof require !== "undefined") {
+  var { ensureCfg, cfg } = require("./config.js");
+}
+
 /**
  * Fonction pure qui décide de l'action à prendre sur le chauffe-eau.
  * Renvoie { action: 'ON'|'OFF'|'NONE', reason: string }
@@ -10,6 +14,8 @@
  *  - opts: optionnel, surcharge des constantes (thresholdOn, thresholdOff, minOnMinutes, minOffMinutes, dailyMaxMinutes, minDailyMinutes, hcStartHour, hcEndHour)
  */
 function decideHeaterAction(input) {
+  ensureCfg();
+
   var state = input.state;
   var surplus = input.surplus;
   var minutesSinceChange = input.minutesSinceChange;
@@ -20,33 +26,33 @@ function decideHeaterAction(input) {
   var tOn =
     typeof opts.thresholdOn !== "undefined"
       ? opts.thresholdOn
-      : CONFIG.thresholdOn;
+      : cfg.thresholdOn;
   var tOff =
     typeof opts.thresholdOff !== "undefined"
       ? opts.thresholdOff
-      : CONFIG.thresholdOff;
+      : cfg.thresholdOff;
   var minOn =
     typeof opts.minOnMinutes !== "undefined"
       ? opts.minOnMinutes
-      : CONFIG.minOnMinutes;
+      : cfg.minOnMinutes;
   var minOff =
     typeof opts.minOffMinutes !== "undefined"
       ? opts.minOffMinutes
-      : CONFIG.minOffMinutes;
+      : cfg.minOffMinutes;
   var maxDaily =
     typeof opts.dailyMaxMinutes !== "undefined"
       ? opts.dailyMaxMinutes
-      : CONFIG.dailyMaxMinutes;
+      : cfg.dailyMaxMinutes;
   var minDaily =
     typeof opts.minDailyMinutes !== "undefined"
       ? opts.minDailyMinutes
-      : CONFIG.minDailyMinutes;
+      : cfg.minDailyMinutes;
   var hcStart =
     typeof opts.hcStartHour !== "undefined"
       ? opts.hcStartHour
-      : CONFIG.hcStartHour;
+      : cfg.hcStartHour;
   var hcEnd =
-    typeof opts.hcEndHour !== "undefined" ? opts.hcEndHour : CONFIG.hcEndHour;
+    typeof opts.hcEndHour !== "undefined" ? opts.hcEndHour : cfg.hcEndHour;
 
   // Si la limite journalière atteinte
   if (dailyMinutes >= maxDaily) {
@@ -102,7 +108,7 @@ function noteInterruption(props, nowMs) {
 function checkIfShouldStopForDay(props, dailyMinutes, nowMs) {
   // règles pour arrêter la chauffe pour la journée
   // condition 1: goal atteint
-  if (dailyMinutes >= CONFIG.dailyMaxMinutes) return true;
+  if (dailyMinutes >= cfg.dailyMaxMinutes) return true;
 
   // condition 2: total on enough + interruptions recent >= threshold
   if (dailyMinutes < cfg.minTotalOnBeforeConsider) return false;

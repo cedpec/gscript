@@ -8,12 +8,12 @@ const CONFIG = {
 
   heaterPower: 3000, // puissance du chauffe-eau en W
   minOnMinutes: 30, // durée minimale ON
-  minOffMinutes: 15, // durée minimale OFF
+  minOffMinutes: 5, // durée minimale OFF
 
   // Limite quotidienne (minutes)
-  dailyMaxMinutes: 240,
+  dailyMaxMinutes: 180,
   // Durée minimale quotidienne garantie (minutes)
-  minDailyMinutes: 150,
+  minDailyMinutes: 120,
 
   // Heures creuses (exemple : 2h → 6h)
   hcStartHour: 2,
@@ -25,6 +25,21 @@ const CONFIG = {
   consecutiveInterrupts: 3,
   interruptwindowMinutes: 30,
   minTotalOnBeforeConsider: 45,
+
+  // ===== POMPE DE FILTRATION PISCINE =====
+  pumpDeviceId: "", // ID du device Tuya pour la pompe
+  pumpThresholdOn: 1500, // Seuil d'allumage pompe (W)
+  pumpThresholdOff: 1000, // Seuil d'arrêt pompe (W)
+  pumpPower: 1500, // Puissance pompe (W)
+  pumpMinOnMinutes: 60, // Durée minimale de filtration continue
+  pumpMinOffMinutes: 30, // Durée minimale d'arrêt
+  pumpDailyMaxMinutes: 480, // Max 8h de filtration/jour
+  pumpMinDailyMinutes: 240, // Min 4h de filtration/jour
+
+  // ===== CHARGE VEHICULE ELECTRIQUE =====
+  vehicleDeviceId: "", // ID du device Tuya pour la borne de charge
+  vehicleMaxPower: 7000, // Puissance max de charge (W)
+  // Note: La borne s'adapte automatiquement, pas de contrôle strict nécessaire
 };
 
 var cfg = null;
@@ -83,6 +98,33 @@ function getConfig() {
     minTotalOnBeforeConsider:
       parseInt(props.getProperty("minTotalOnBeforeConsider")) ||
       CONFIG.minTotalOnBeforeConsider,
+
+    // Pompe filtration piscine
+    pumpDeviceId: props.getProperty("pumpDeviceId") || CONFIG.pumpDeviceId,
+    pumpThresholdOn:
+      parseInt(props.getProperty("pumpThresholdOn")) || CONFIG.pumpThresholdOn,
+    pumpThresholdOff:
+      parseInt(props.getProperty("pumpThresholdOff")) ||
+      CONFIG.pumpThresholdOff,
+    pumpPower: parseInt(props.getProperty("pumpPower")) || CONFIG.pumpPower,
+    pumpMinOnMinutes:
+      parseInt(props.getProperty("pumpMinOnMinutes")) ||
+      CONFIG.pumpMinOnMinutes,
+    pumpMinOffMinutes:
+      parseInt(props.getProperty("pumpMinOffMinutes")) ||
+      CONFIG.pumpMinOffMinutes,
+    pumpDailyMaxMinutes:
+      parseInt(props.getProperty("pumpDailyMaxMinutes")) ||
+      CONFIG.pumpDailyMaxMinutes,
+    pumpMinDailyMinutes:
+      parseInt(props.getProperty("pumpMinDailyMinutes")) ||
+      CONFIG.pumpMinDailyMinutes,
+
+    // Véhicule électrique
+    vehicleDeviceId:
+      props.getProperty("vehicleDeviceId") || CONFIG.vehicleDeviceId,
+    vehicleMaxPower:
+      parseInt(props.getProperty("vehicleMaxPower")) || CONFIG.vehicleMaxPower,
   };
 }
 
@@ -97,6 +139,7 @@ if (typeof module !== "undefined") {
   module.exports = {
     CONFIG,
     get cfg() {
+      ensureCfg();
       return cfg; // ✅ getter dynamique
     },
     ensureCfg,

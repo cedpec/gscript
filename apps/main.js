@@ -105,7 +105,7 @@ function checkSolarAndControlHeater() {
 
   // Ajuste le surplus pour tenir compte du chauffe eau allumé
   if (state === "ON") {
-    surplus += CONFIG.heaterPower;
+    surplus += cfg.heaterPower;
   }
 
   Logger.log({
@@ -334,6 +334,18 @@ function getSettings() {
     interruptwindowMinutes: props.getProperty("interruptwindowMinutes") || "30",
     minTotalOnBeforeConsider:
       props.getProperty("minTotalOnBeforeConsider") || "45",
+    // Pompe filtration piscine
+    pumpDeviceId: props.getProperty("pumpDeviceId") || "",
+    pumpThresholdOn: props.getProperty("pumpThresholdOn") || "1500",
+    pumpThresholdOff: props.getProperty("pumpThresholdOff") || "1000",
+    pumpPower: props.getProperty("pumpPower") || "1500",
+    pumpMinOnMinutes: props.getProperty("pumpMinOnMinutes") || "60",
+    pumpMinOffMinutes: props.getProperty("pumpMinOffMinutes") || "30",
+    pumpDailyMaxMinutes: props.getProperty("pumpDailyMaxMinutes") || "480",
+    pumpMinDailyMinutes: props.getProperty("pumpMinDailyMinutes") || "240",
+    // Véhicule électrique
+    vehicleDeviceId: props.getProperty("vehicleDeviceId") || "",
+    vehicleMaxPower: props.getProperty("vehicleMaxPower") || "7000",
   };
 }
 
@@ -372,7 +384,17 @@ function saveSettings(data) {
     "consecutiveInterrupts",
     "interruptwindowMinutes",
     "minTotalOnBeforeConsider",
-    // Note: HEATER_STATE est en lecture seule
+    "pumpDeviceId",
+    "pumpThresholdOn",
+    "pumpThresholdOff",
+    "pumpPower",
+    "pumpMinOnMinutes",
+    "pumpMinOffMinutes",
+    "pumpDailyMaxMinutes",
+    "pumpMinDailyMinutes",
+    "vehicleDeviceId",
+    "vehicleMaxPower",
+    // Note: HEATER_STATE et autres états sont en lecture seule
   ];
 
   var saved = 0;

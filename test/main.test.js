@@ -59,6 +59,18 @@ describe("checkSolarAndControlHeater - réinitialisation quotidienne", () => {
     }));
     global.creerDeclencheur = jest.fn();
     global.supprimerDeclencheur = jest.fn();
+    // Mock ScriptApp for trigger management
+    global.ScriptApp = {
+      newTrigger: jest.fn(() => ({
+        timeBased: jest.fn(() => ({
+          everyMinutes: jest.fn(() => ({
+            create: jest.fn(),
+          })),
+        })),
+      })),
+      getProjectTriggers: jest.fn(() => []),
+      deleteTrigger: jest.fn(),
+    };
     global.cfg = { deviceId: "dummy" };
 
     // Simulation de CONFIG global
@@ -146,9 +158,9 @@ describe("checkSolarAndControlHeater - réinitialisation quotidienne", () => {
     };
 
     // Configuration globale simulée
-    global.CONFIG = { hcEndHour: 6, heaterPower: 2000 }; // <== la puissance simulée du chauffe-eau en watts
-    global.ensureCfg = () => {};
-    global.cfg = { deviceId: "abc" };
+    // global.CONFIG = { hcEndHour: 6, heaterPower: 2000 }; // <== la puissance simulée du chauffe-eau en watts
+    // global.ensureCfg = () => {};
+    // global.cfg = { deviceId: "abc" };
 
     // Fonctions externes nécessaires
     global.getValidToken = () => "token";
@@ -185,7 +197,7 @@ describe("checkSolarAndControlHeater - réinitialisation quotidienne", () => {
     const surplusFinal = JSON.parse(logObjet).surplus;
 
     // Vérifie que le surplus a bien été augmenté de heaterPower
-    expect(surplusFinal).toBe(100 + 2000);
+    expect(surplusFinal).toBe(100 + 3000);
   });
 
   test("ne modifie pas le surplus si le chauffe-eau est OFF", () => {

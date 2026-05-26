@@ -93,7 +93,7 @@ describe("checkSolarAndControlHeater - détection des interruptions de chauffe",
     global.NO_POWER_MINUTES = 5;
 
     // Simulation de CONFIG global
-    global.CONFIG = { hcEndHour: 7, heaterPower: 2000 };
+    // global.CONFIG = { hcEndHour: 7, heaterPower: 2000 };
 
     // Mock device status — ajusté test par test
     global.extractCodeValue = (arr, code) =>

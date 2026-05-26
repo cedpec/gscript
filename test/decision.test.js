@@ -1,8 +1,9 @@
 // Load mocks
 require("../lib/gas-mock");
-
+const { cfg } = require("../apps/config.js");
 const { decideHeaterAction } = require("../apps/logic.js");
 
+// Configuration globale simulée
 beforeAll(() => {
   global.CONFIG = require("../apps/config.js").CONFIG;
 });
