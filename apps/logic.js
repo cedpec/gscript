@@ -117,9 +117,97 @@ function checkIfShouldStopForDay(props, dailyMinutes, nowMs) {
 }
 
 // Si tu veux tester avec Jest
+/**
+ * Prend une décision pour un appareil spécifique selon sa priorité
+ * @param {string} deviceId - ID de l'appareil ('heater', 'pump', 'vehicle')
+ * @param {Object} input - Données pour la décision
+ * @returns {Object} { action: 'ON'|'OFF'|'NONE', reason: string }
+ */
+function decideDeviceAction(deviceId, input) {
+  ensureCfg();
+  var fallback = cfg || CONFIG;
+
+  // Le chauffe-eau (priorité 1) utilise la logique existante
+  if (deviceId === "heater") {
+    return decideHeaterAction(input);
+  }
+
+  // La pompe (priorité 2) a une logique similaire mais secondaire
+  if (deviceId === "pump") {
+    // La pompe ne fonctionne que si chauffe-eau est OFF et surplus suffisant
+    // Récupère les seuils de la pompe depuis input.opts ou fallback
+    var state = input.state;
+    var surplus = input.surplus;
+    var minutesSinceChange = input.minutesSinceChange;
+    var dailyMinutes = input.dailyMinutes;
+    var hour = input.hour;
+    var opts = input.opts || {};
+
+    var tOn = opts.pumpThresholdOn || fallback.pumpThresholdOn || 1500;
+    var tOff = opts.pumpThresholdOff || fallback.pumpThresholdOff || 1000;
+    var minOn =
+      opts.pumpMinOnMinutes || fallback.pumpMinOnMinutes || 60;
+    var minOff =
+      opts.pumpMinOffMinutes || fallback.pumpMinOffMinutes || 30;
+    var maxDaily =
+      opts.pumpDailyMaxMinutes || fallback.pumpDailyMaxMinutes || 480;
+    var minDaily =
+      opts.pumpMinDailyMinutes || fallback.pumpMinDailyMinutes || 240;
+
+    // Si heater est ON, pompe doit rester OFF
+    if (input.heaterState === "ON") {
+      return { action: "OFF", reason: "heater_priority" };
+    }
+
+    // Vérifier les limites quotidiennes
+    if (dailyMinutes >= maxDaily) {
+      return { action: "OFF", reason: "daily_limit" };
+    }
+
+    // Décision basée sur surplus
+    if (state === "ON") {
+      // Reste ON si surplus suffisant et min durée pas atteinte
+      if (surplus > tOff && minutesSinceChange < minOn) {
+        return { action: "NONE", reason: "pump_stay_on" };
+      }
+      // OFF si surplus trop bas
+      if (surplus < tOff) {
+        return { action: "OFF", reason: "low_surplus" };
+      }
+      // Reste ON sinon
+      return { action: "NONE", reason: "pump_continue" };
+    } else {
+      // OFF: ne démarre que si surplus suffisant ET min durée OFF écoulée
+      if (surplus > tOn && minutesSinceChange >= minOff) {
+        // Mais pas si daily min pas atteint et pas heures creuses
+        if (
+          dailyMinutes < minDaily &&
+          hour >= fallback.hcEndHour &&
+          hour < fallback.hcStartHour
+        ) {
+          return { action: "NONE", reason: "too_early_for_min_daily" };
+        }
+        return { action: "ON", reason: "surplus_available" };
+      }
+      return { action: "NONE", reason: "insufficient_surplus" };
+    }
+  }
+
+  // Véhicule (priorité 3): charge automatiquement
+  if (deviceId === "vehicle") {
+    // La borne s'adapte automatiquement
+    // On ne contrôle pas l'ordre: elle charge si energiesolaire restante
+    // La logique de contrôle du véhicule sera dans main.js
+    return { action: "AUTO", reason: "vehicle_smart_managed" };
+  }
+
+  return { action: "NONE", reason: "unknown_device" };
+}
+
 if (typeof module !== "undefined") {
   module.exports = {
     decideHeaterAction,
+    decideDeviceAction,
     noteInterruption,
     checkIfShouldStopForDay,
   };
