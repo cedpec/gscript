@@ -145,10 +145,8 @@ function decideDeviceAction(deviceId, input) {
 
     var tOn = opts.pumpThresholdOn || fallback.pumpThresholdOn || 1500;
     var tOff = opts.pumpThresholdOff || fallback.pumpThresholdOff || 1000;
-    var minOn =
-      opts.pumpMinOnMinutes || fallback.pumpMinOnMinutes || 60;
-    var minOff =
-      opts.pumpMinOffMinutes || fallback.pumpMinOffMinutes || 30;
+    var minOn = opts.pumpMinOnMinutes || fallback.pumpMinOnMinutes || 60;
+    var minOff = opts.pumpMinOffMinutes || fallback.pumpMinOffMinutes || 30;
     var maxDaily =
       opts.pumpDailyMaxMinutes || fallback.pumpDailyMaxMinutes || 480;
     var minDaily =

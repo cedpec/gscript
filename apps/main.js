@@ -1,6 +1,9 @@
 if (typeof require !== "undefined") {
   var { ensureCfg, cfg } = require("./config.js");
-  var { getSolarPowerAvailable } = require("./solaredge.js");
+  var {
+    getSolarPowerAvailable,
+    exchangeSolarEdgeAuthorizationCode,
+  } = require("./solaredge.js");
   var { getValidToken, getDeviceStatus } = require("./tuya.js");
   var { extractCodeValue } = require("./utils.js");
   var {
@@ -317,7 +320,7 @@ function getSettings() {
     hcEndHour: props.getProperty("hcEndHour") || "6",
     // Configuration SolarEdge
     SITE_ID: props.getProperty("SITE_ID") || "",
-    SOLAR_KEY: props.getProperty("SOLAR_KEY") || "",
+    SOLAREDGE_REDIRECT_URI: props.getProperty("SOLAREDGE_REDIRECT_URI") || "",
     // Configuration Tuya
     TUYA_HOST: props.getProperty("TUYA_HOST") || "",
     TUYA_ACCESS_ID: props.getProperty("TUYA_ACCESS_ID") || "",
@@ -372,7 +375,7 @@ function saveSettings(data) {
     "hcStartHour",
     "hcEndHour",
     "SITE_ID",
-    "SOLAR_KEY",
+    "SOLAREDGE_REDIRECT_URI",
     "TUYA_HOST",
     "TUYA_ACCESS_ID",
     "TUYA_ACCESS_SECRET",
@@ -509,5 +512,11 @@ function doGet() {
 
 // Export pour Jest
 if (typeof module !== "undefined") {
-  module.exports = { checkSolarAndControlHeater };
+  module.exports = {
+    checkSolarAndControlHeater,
+    doGet,
+    exchangeSolarEdgeAuthorizationCode,
+    getSettings,
+    saveSettings,
+  };
 }

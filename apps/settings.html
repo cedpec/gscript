@@ -280,10 +280,62 @@
           </div>
           <div class="form-row full">
             <div class="form-group">
-              <label for="SOLAR_KEY">Clé API SolarEdge</label>
-              <input type="password" id="SOLAR_KEY" name="SOLAR_KEY" />
+              <label for="SOLAREDGE_REDIRECT_URI">Redirect URI OAuth</label>
+              <input
+                type="url"
+                id="SOLAREDGE_REDIRECT_URI"
+                name="SOLAREDGE_REDIRECT_URI"
+                required
+              />
               <div class="hint">
-                Clé d'authentification pour l'API SolarEdge
+                URI exact enregistrée dans l'application SolarEdge et utilisée
+                dans la demande d'autorisation qui a généré ce code.
+              </div>
+            </div>
+          </div>
+          <div class="form-row full">
+            <div class="form-group">
+              <label>Connexion OAuth2</label>
+              <p class="hint">
+                Enregistrez SOLAREDGE_CLIENT_ID et SOLAREDGE_CLIENT_SECRET dans
+                les propriétés du script Apps Script, puis collez ci-dessous
+                votre authorization code SolarEdge. L'URI ci-dessus doit être
+                exactement le même que celui envoyé lors de l'autorisation. Le
+                code sera échangé immédiatement et ne sera pas conservé.
+              </p>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="SOLAREDGE_AUTHORIZATION_CODE"
+                    >Authorization code</label
+                  >
+                  <input
+                    type="password"
+                    id="SOLAREDGE_AUTHORIZATION_CODE"
+                    autocomplete="off"
+                  />
+                </div>
+                <div class="form-group">
+                  <button
+                    type="button"
+                    class="btn-secondary"
+                    id="exchangeSolarEdgeCode"
+                  >
+                    🔐 Enregistrer le code
+                  </button>
+                </div>
+              </div>
+              <div class="button-group">
+                <button
+                  type="button"
+                  class="btn-secondary"
+                  id="setupSolarEdgeTrigger"
+                >
+                  ⏱️ Activer l'actualisation toutes les 15 min
+                </button>
+              </div>
+              <div class="hint">
+                Actualisation de 10 h inclus à 17 h exclu (fuseau du projet).
+                Maximum théorique : 868 appels par mois de 31 jours.
               </div>
             </div>
           </div>
@@ -611,7 +663,6 @@
                 input.value = data[key];
               }
             });
-
             document.getElementById("loading").style.display = "none";
             document.getElementById("settingsForm").style.display = "block";
             showMessage("Paramètres chargés avec succès", "success", 2000);
@@ -627,6 +678,57 @@
       function reloadSettings() {
         loadSettings();
       }
+
+      document
+        .getElementById("exchangeSolarEdgeCode")
+        .addEventListener("click", function () {
+          const input = document.getElementById("SOLAREDGE_AUTHORIZATION_CODE");
+          const button = this;
+          if (!input.value.trim()) {
+            showMessage("Collez d'abord le code d'autorisation.", "error");
+            return;
+          }
+
+          button.disabled = true;
+          google.script.run
+            .withSuccessHandler(function () {
+              input.value = "";
+              button.disabled = false;
+              showMessage(
+                "Connexion SolarEdge enregistrée. Le code a été échangé et n'est pas conservé.",
+                "success",
+                5000,
+              );
+            })
+            .withFailureHandler(function (error) {
+              button.disabled = false;
+              showMessage(
+                "Erreur d'échange du code SolarEdge: " + error.message,
+                "error",
+              );
+            })
+            .exchangeSolarEdgeAuthorizationCode(input.value);
+        });
+
+      document
+        .getElementById("setupSolarEdgeTrigger")
+        .addEventListener("click", function () {
+          google.script.run
+            .withSuccessHandler(function () {
+              showMessage(
+                "Actualisation SolarEdge configurée toutes les 15 minutes",
+                "success",
+                3000,
+              );
+            })
+            .withFailureHandler(function (error) {
+              showMessage(
+                "Erreur de configuration du déclencheur: " + error.message,
+                "error",
+              );
+            })
+            .setupSolarEdgeTrigger();
+        });
 
       // Soumettre le formulaire
       document

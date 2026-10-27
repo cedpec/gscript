@@ -75,7 +75,6 @@ function getConfig() {
 
     // APIs
     siteId: props.getProperty("SITE_ID"),
-    apiKeySolar: props.getProperty("SOLAR_KEY"),
     tuyaHost: props.getProperty("TUYA_HOST"),
     tuyaAccessId: props.getProperty("TUYA_ACCESS_ID"),
     tuyaAccessSecret: props.getProperty("TUYA_ACCESS_SECRET"),
