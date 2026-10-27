@@ -87,6 +87,10 @@ compteur (`exportPower - importPower`). Une mesure de plus de 30 minutes est
 considérée comme périmée et vaut zéro. Le flux de puissance live V2 n'est pas
 utilisé car il requiert Business Pro ou Enterprise.
 
+Quand `DAILY_MINUTES` atteint `dailyMaxMinutes`, le déclencheur SolarEdge
+conserve la valeur en cache sans appeler l'API; les appels reprennent après la
+réinitialisation quotidienne du compteur.
+
 ## How to push to GitHub
 
 1. Create a repository on GitHub (via the website or `gh repo create`).

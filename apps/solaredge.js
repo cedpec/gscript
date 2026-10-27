@@ -5,6 +5,10 @@ var SOLAREDGE_CACHE_MAX_AGE_MS = 30 * 60 * 1000;
 var SOLAREDGE_START_HOUR = 10;
 var SOLAREDGE_END_HOUR = 17;
 
+if (typeof require !== "undefined") {
+  var { ensureCfg } = require("./config.js");
+}
+
 function exchangeSolarEdgeAuthorizationCode(code) {
   var authorizationCode = typeof code === "string" ? code.trim() : "";
   if (!authorizationCode) {
@@ -58,6 +62,21 @@ function setupSolarEdgeTrigger() {
 function refreshSolarPowerCache() {
   var now = Date.now();
   if (!isWithinSolarEdgeWindow_(now)) {
+    return getSolarPowerAvailable();
+  }
+
+  var props = PropertiesService.getScriptProperties();
+  var dailyMinutes = parseInt(props.getProperty("DAILY_MINUTES") || "0", 10);
+  if (!isFinite(dailyMinutes)) dailyMinutes = 0;
+  var dailyMaxMinutes = ensureCfg().dailyMaxMinutes;
+  if (dailyMinutes >= dailyMaxMinutes) {
+    Logger.log(
+      "Actualisation SolarEdge ignorée: limite quotidienne du chauffe-eau atteinte (" +
+        dailyMinutes +
+        "/" +
+        dailyMaxMinutes +
+        " min)",
+    );
     return getSolarPowerAvailable();
   }
 

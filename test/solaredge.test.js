@@ -188,6 +188,37 @@ describe("SolarEdge quota and telemetry cache", () => {
     expect(UrlFetchApp.fetch).not.toHaveBeenCalled();
   });
 
+  test("skips SolarEdge calls at the daily heater limit and resumes after reset", () => {
+    props.setProperty("SOLAREDGE_CLIENT_ID", "client");
+    props.setProperty("SOLAREDGE_CLIENT_SECRET", "secret");
+    props.setProperty("SOLAREDGE_ACCESS_TOKEN", "access");
+    props.setProperty(
+      "SOLAREDGE_ACCESS_TOKEN_EXPIRES_AT",
+      (now + 60 * 60 * 1000).toString(),
+    );
+    props.setProperty("SITE_ID", "12345");
+    props.setProperty("dailyMaxMinutes", "180");
+    props.setProperty("DAILY_MINUTES", "180");
+    jest.spyOn(UrlFetchApp, "fetch").mockReturnValue(
+      mockResponse(200, {
+        meters: {
+          meter: {
+            importPower: { values: [{ value: 100 }] },
+            exportPower: { values: [{ value: 400 }] },
+          },
+        },
+      }),
+    );
+
+    expect(refreshSolarPowerCache()).toBe(0);
+    expect(UrlFetchApp.fetch).not.toHaveBeenCalled();
+    expect(Logger.logs.join("\n")).toContain("limite quotidienne");
+    props.setProperty("DAILY_MINUTES", "0");
+    const resumedSurplus = refreshSolarPowerCache();
+    expect(resumedSurplus).toBe(300);
+    expect(UrlFetchApp.fetch).toHaveBeenCalledTimes(1);
+  });
+
   test("skips an overlapping refresh while another execution holds the lock", () => {
     const tryLock = jest.fn(() => false);
     global.LockService = {
